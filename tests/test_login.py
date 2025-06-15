@@ -7,27 +7,27 @@ from utils.test_data import VALID_USERS
 class TestLogin:
 
     def setup_method(self):
-        # Her test öncesinde login sayfasına git
+        # Navigate to login page before each test
         self.driver.get("https://www.saucedemo.com/")
-        # Sayfanın yüklenmesi için kısa bir bekleme
+        # Wait for page to fully load
         self.wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         
     def teardown_method(self):
-        # Her test sonrasında logout işlemi yap
+        # Cleanup after each test
         try:
-            # Eğer giriş yapıldıysa, logout yap
+            # Logout if logged in
             if "inventory" in self.driver.current_url:
                 self.driver.find_element("id", "react-burger-menu-btn").click()
                 self.wait.until(lambda driver: driver.find_element("id", "logout_sidebar_link").is_displayed())
                 self.driver.find_element("id", "logout_sidebar_link").click()
         except:
-            # Eğer zaten login sayfasındaysak, hiçbir şey yapma
+            # Do nothing if already on login page
             pass
         
-        # Çerezleri temizle
+        # Clear cookies
         self.driver.delete_all_cookies()
         
-        # Sayfayı yenile
+        # Refresh page
         self.driver.get("https://www.saucedemo.com/")
 
     def test_login_with_valid_standard_user(self):

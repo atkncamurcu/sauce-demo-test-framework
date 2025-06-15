@@ -50,7 +50,7 @@ class LoginPage(BasePage):
             # Try each selector
             for selector in selectors:
                 try:
-                    # Ekran görüntüsünü screenshots klasörüne kaydet ve Allure raporuna ekle
+                    # Take screenshot and save to screenshots folder, then attach to Allure report
                     self.take_screenshot("before_error_check")
                     return self.get_text(selector)
                 except:
