@@ -30,18 +30,21 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install google-chrome-stable
         
-    - name: Install ChromeDriver
-      run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1)
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-        curl -L -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-        unzip chromedriver.zip
-        chmod +x chromedriver
-        sudo mv chromedriver /usr/local/bin/
+    - name: Setup Chrome and ChromeDriver
+      uses: nanasess/setup-chromedriver@v2
+      with:
+        # Optional: specify a Chrome version
+        chromedriver-version: 'latest'
         
     - name: Run tests
       run: |
-        pytest tests/ -v
+        # Add ChromeDriver to PATH
+        export PATH="$PATH:/usr/local/bin"
+        # Check Chrome and ChromeDriver versions 
+        google-chrome --version
+        chromedriver --version
+        # Run tests with verbose output
+        pytest tests/ -v --browser=chrome
         
     - name: Upload test report
       if: always()
