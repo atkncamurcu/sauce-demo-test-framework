@@ -124,6 +124,9 @@ If you need to modify the CI configuration, you can edit this file. The workflow
 
 - Run on Ubuntu latest
 - Use Python 3.11
+- Use actions/checkout@v4
+- Use actions/setup-python@v5
+- Use actions/upload-artifact@v4
 - Run in headless mode
 
 ### Viewing Test Results
