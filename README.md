@@ -127,6 +127,9 @@ If you need to modify the CI configuration, you can edit this file. The workflow
 - Use actions/checkout@v4
 - Use actions/setup-python@v5
 - Use actions/upload-artifact@v4
+- Use Firefox instead of Chrome
+- Use browser-actions/setup-firefox to install Firefox
+- Use browser-actions/setup-geckodriver to install GeckoDriver
 - Run in headless mode
 
 ### Viewing Test Results
