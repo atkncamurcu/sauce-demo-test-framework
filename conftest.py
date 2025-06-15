@@ -23,16 +23,31 @@ def setup(request):
     # Check if running in CI environment (GitHub Actions)
     is_ci = os.environ.get('CI', 'false').lower() == 'true'
     
-    if browser.lower() == "firefox" and not is_ci:
-        # First try Firefox with direct path
+    if browser.lower() == "firefox":
         try:
-            print("Initializing Firefox WebDriver with local driver...")
+            print("Initializing Firefox WebDriver...")
             firefox_options = FirefoxOptions()
             
-            # Use direct path to geckodriver - update this path as needed  
-            driver_path = "/usr/local/bin/geckodriver"  # Common location on macOS
-            service = FirefoxService(executable_path=driver_path)
-            driver = webdriver.Firefox(service=service, options=firefox_options)
+            # Add headless mode for CI environment
+            if is_ci:
+                print("Running in CI environment, using headless Firefox")
+                firefox_options.add_argument("--headless")
+                
+            # Different initialization based on environment
+            if is_ci:
+                # In CI, geckodriver should be in PATH
+                driver = webdriver.Firefox(options=firefox_options)
+            else:
+                # First try with direct path to geckodriver
+                try:
+                    driver_path = "/usr/local/bin/geckodriver"  # Common location on macOS
+                    service = FirefoxService(executable_path=driver_path)
+                    driver = webdriver.Firefox(service=service, options=firefox_options)
+                except Exception:
+                    # Fallback to WebDriver manager
+                    service = FirefoxService(GeckoDriverManager().install())
+                    driver = webdriver.Firefox(service=service, options=firefox_options)
+                    
             print("Firefox WebDriver initialized successfully!")
         except Exception as e:
             print(f"Firefox WebDriver initialization error: {e}")

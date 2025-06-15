@@ -23,28 +23,28 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: Install Chrome
+    - name: Install Firefox
       run: |
-        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg > /dev/null
-        echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
         sudo apt-get update
-        sudo apt-get -y install google-chrome-stable
+        sudo apt-get install -y firefox
         
-    - name: Setup Chrome and ChromeDriver
-      uses: nanasess/setup-chromedriver@v2
+    - name: Setup Firefox and GeckoDriver
+      uses: browser-actions/setup-firefox@v1
+      
+    - name: Setup GeckoDriver
+      uses: browser-actions/setup-geckodriver@latest
       with:
-        # Optional: specify a Chrome version
-        chromedriver-version: 'latest'
+        token: ${{ github.token }}
         
     - name: Run tests
       run: |
-        # Add ChromeDriver to PATH
+        # Add geckodriver to PATH
         export PATH="$PATH:/usr/local/bin"
-        # Check Chrome and ChromeDriver versions 
-        google-chrome --version
-        chromedriver --version
+        # Check Firefox and geckodriver versions 
+        firefox --version
+        geckodriver --version
         # Run tests with verbose output
-        pytest tests/ -v --browser=chrome
+        pytest tests/ -v --browser=firefox
         
     - name: Upload test report
       if: always()
