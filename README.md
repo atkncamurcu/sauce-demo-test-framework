@@ -99,6 +99,38 @@ If you installed the drivers in a location other than `/usr/local/bin/`, update 
 
 ```python
 # For Chrome
+
+## Continuous Integration
+
+This project is configured to run tests automatically using GitHub Actions. Tests will run on:
+
+- Every push to the main branch
+- Every pull request to the main branch
+
+### GitHub Actions Workflow
+
+The CI workflow:
+1. Sets up a Python environment
+2. Installs project dependencies
+3. Sets up Chrome and ChromeDriver
+4. Runs the tests
+5. Uploads test artifacts (reports and screenshots)
+
+### CI Configuration
+
+The GitHub Actions workflow is defined in `.github/workflows/test.yml`. 
+
+If you need to modify the CI configuration, you can edit this file. The workflow is set to:
+
+- Run on Ubuntu latest
+- Use Python 3.11
+- Run in headless mode
+
+### Viewing Test Results
+
+After a CI run completes, you can view:
+- The test execution logs in the GitHub Actions tab
+- Test artifacts (screenshots and reports) by downloading the uploaded artifacts from the workflow run page
 driver_path = "/path/to/your/chromedriver"  # Update this path
 service = ChromeService(executable_path=driver_path)
 

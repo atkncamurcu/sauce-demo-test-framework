@@ -18,9 +18,12 @@ from webdriver_manager.firefox import GeckoDriverManager
 @pytest.fixture(scope="class")
 def setup(request):
     driver = None
-    browser = request.config.getoption("--browser", default="firefox")
+    browser = request.config.getoption("--browser", default="chrome")
     
-    if browser.lower() == "firefox":
+    # Check if running in CI environment (GitHub Actions)
+    is_ci = os.environ.get('CI', 'false').lower() == 'true'
+    
+    if browser.lower() == "firefox" and not is_ci:
         # First try Firefox with direct path
         try:
             print("Initializing Firefox WebDriver with local driver...")
@@ -37,16 +40,32 @@ def setup(request):
     # If Firefox fails or browser is Chrome, try Chrome
     if driver is None:
         try:
-            print("Initializing Chrome WebDriver with local driver...")
+            print("Initializing Chrome WebDriver...")
             chrome_options = ChromeOptions()
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--disable-gpu")
             
-            # Use direct path to chromedriver - update this path as needed
-            driver_path = "/usr/local/bin/chromedriver"  # Common location on macOS
-            service = ChromeService(executable_path=driver_path)
-            driver = webdriver.Chrome(service=service, options=chrome_options)
+            # Add headless mode for CI environment
+            if is_ci:
+                print("Running in CI environment, using headless mode")
+                chrome_options.add_argument("--headless")
+                
+            # Different initialization based on environment
+            if is_ci:
+                # In CI, ChromeDriver should be in PATH
+                driver = webdriver.Chrome(options=chrome_options)
+            else:
+                # Try local driver path first
+                try:
+                    driver_path = "/usr/local/bin/chromedriver"  # Common location on macOS
+                    service = ChromeService(executable_path=driver_path)
+                    driver = webdriver.Chrome(service=service, options=chrome_options)
+                except Exception:
+                    # Fallback to WebDriver manager
+                    service = ChromeService(ChromeDriverManager().install())
+                    driver = webdriver.Chrome(service=service, options=chrome_options)
+                    
             print("Chrome WebDriver initialized successfully!")
         except Exception as e:
             print(f"Chrome WebDriver initialization error: {e}")
